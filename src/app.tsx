@@ -10,7 +10,7 @@ const App = () => {
 
     return (
         <>
-            <div>This is react app template with hot reloading, less and typescript</div>
+            <div>This is react app template with hot reloading, less and typescript.</div>
         </>
     );
 };
