@@ -1,0 +1,58 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-2019'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+#- script: |
+#    npm install
+#    npm run build
+#    cd dist
+#    npm install Express
+#  displayName: 'npm install and build'
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      dir
+      npm install
+      echo "on"
+      npm run build
+      echo "on"
+      cd dist
+      echo "on"
+      npm install Express
+      echo "on"
+      dir
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |      
+      cd dist
+      cat <<'END' > index.js
+      var express=require('express');var app=express();var options={index:'index.html'};app.use('/',express.static('/home/site/wwwroot',options));app.listen(process.env.PORT);
+      END
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/dist'
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+    replaceExistingArchive: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+     curl -X POST --data-binary $(Build.ArtifactStagingDirectory)/app.zip https://cts-hugs.scm.azurewebsites.net/api/zipdeploy -u $(kudu_username):$(kudu_password)
