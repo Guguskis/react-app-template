@@ -8,7 +8,7 @@ const App = () => {
 
     return (
         <>
-            <div>This is react app template with hot reloading, less and typescript.</div>
+            <div>This is an empty react hooks project with Axios, hot reloading, less, typescript and lint.</div>
         </>
     );
 };
